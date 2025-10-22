@@ -5,10 +5,13 @@
 function UploadApplication([int]$comPort,[int]$baudrate,[int]$download,[int]$fileType,[int]$msgBox,[int]$showProgress) {& "C:\CipherLab\Forge\Batch\8 Series\Utilities\AG_Load.exe" .\8200.agx,3,1,1,1,0,1}
 #DLookup .\*.agx <COM Port>, <Baudrate 1-5>,<Download Via 1-3>,<File Type 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
 function FunctionWrapper([scriptblock]$action) {
-    Write-Host "Upewnij sie ze urzadzenie jest podlaczone pod wybrany COM port, po czym wcisnij ENTER"
-    Read-Host 
+    Write-Host "Podaj COM port oraz jego prędkość oddzielone przecinkiem (więcej w README)"
+    Write-Host "np.: 1,1"
+    Write-Host "Upewnij sie ze urzadzenie jest podlaczone pod wybrany COM port, po czym wcisnij ENTER" 
+    $toSplit = Read-Host
+    $array = $toSplit.Split(",")
     Write-Host "rozpoczecie dzialanie funkcji"
-    $action.Invoke()
+    & $action
     Write-Host "zakonczenie dzialania funkcji"
 }
 function NormalizeDiacritics([string] $text) {
@@ -62,7 +65,7 @@ Write-Output "3 - Wgraj Aplikacje (UWAGA: wymaga pliku .AGX w lokacji skryptu)"
 Write-Output "4 - Zakoncz skrypt"
 $value = Read-Host " "
 switch($value){
-   1 {CreateLookup}
+   1 {FunctionWrapper -action ${function:CreateLookup} }
    2 {UploadLookup}
    3 {UploadApplication}
 }
