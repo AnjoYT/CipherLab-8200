@@ -1,9 +1,12 @@
-﻿function UploadLookup([int]$comPort,[int]$baudrate,[int]$download,[int]$msgBox,[int]$showProgress) {& "C:\CipherLab\Forge\Batch\8 Series\Utilities\DLookup.exe" .\ParsedObjects.txt,3,1,1,0,1}
+﻿function UploadLookup([int]$comPort,[int]$baudrate,[int]$download,[int]$msgBox,[int]$showProgress) {
+    & "C:\CipherLab\Forge\Batch\8 Series\Utilities\DLookup.exe" .\ParsedObjects.txt,3,1,1,0,1
+}
 #DLookup ParsedObjects.txt <COM Port>, <Baudrate 1-5>,<Download Via 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
 function UploadApplication([int]$comPort,[int]$baudrate,[int]$download,[int]$fileType,[int]$msgBox,[int]$showProgress) {& "C:\CipherLab\Forge\Batch\8 Series\Utilities\AG_Load.exe" .\8200.agx,3,1,1,1,0,1}
 #DLookup .\*.agx <COM Port>, <Baudrate 1-5>,<Download Via 1-3>,<File Type 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
 function FunctionWrapper([scriptblock]$action) {
-    Write-Host "Upewnij sie ze urzadzenie jest podlaczone pod wybrany COM port, po czym wcisnij ENTER" 
+    Write-Host "Upewnij sie ze urzadzenie jest podlaczone pod wybrany COM port, po czym wcisnij ENTER"
+    Read-Host 
     Write-Host "rozpoczecie dzialanie funkcji"
     $action.Invoke()
     Write-Host "zakonczenie dzialania funkcji"
@@ -62,5 +65,4 @@ switch($value){
    1 {CreateLookup}
    2 {UploadLookup}
    3 {UploadApplication}
-   4 {break}
 }
