@@ -3,7 +3,7 @@
     & "C:\CipherLab\Forge\Batch\8 Series\Utilities\DLookup.exe" .\ParsedObjects.txt,$comPort,$baudrate,1,0,1
 }
 function UploadApplication([int]$comPort,[int]$baudrate) {
-    #DLookup .\*.agx <COM Port>, <Baudrate 1-5>,<Download Via 1-3>,<File Type 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
+    #AG_Load .\*.agx <COM Port>, <Baudrate 1-5>,<Download Via 1-3>,<File Type 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
     & "C:\CipherLab\Forge\Batch\8 Series\Utilities\AG_Load.exe" .\8200.agx,$comPort,$baudrate,1,1,0,1
 }
 function FunctionWrapper([System.Action[int,int]]$action) {
