@@ -50,7 +50,7 @@ function CreateLookup {
         Remove-Item -Path .\ParsedObjects.txt
     }
     $importedCSV = Import-Csv .\*.csv -Delimiter ';' -Encoding UTF8 |
-        Select-Object "Nr inwentarzowy", "Nazwa","Wartosc" , "Os. odpowiedzialna", "Umiejscowienie", "Grupa"
+        Select-Object "Nr inwentarzowy", "Nazwa","Wartość" , "Os. odpowiedzialna", "Umiejscowienie", "Grupa"
     $importedCSV | Export-Csv .\SelectedObjects.txt -NoTypeInformation -Delimiter ';' -Encoding UTF8
         Add-Content -Path .\ParsedObjects.txt -Encoding Ascii -Value(
         Get-Content -Path .\SelectedObjects.txt | % {
