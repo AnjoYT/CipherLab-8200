@@ -1,12 +1,21 @@
-﻿function UploadLookup([int]$comPort,[int]$baudrate,[int]$download,[int]$msgBox,[int]$showProgress) {& "C:\CipherLab\Forge\Batch\8 Series\Utilities\DLookup.exe" .\ParsedObjects.txt,3,1,1,0,1}
-#DLookup ParsedObjects.txt <COM Port>, <Baudrate 1-5>,<Download Via 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
-function UploadApplication([int]$comPort,[int]$baudrate,[int]$download,[int]$fileType,[int]$msgBox,[int]$showProgress) {& "C:\CipherLab\Forge\Batch\8 Series\Utilities\AG_Load.exe" .\8200.agx,3,1,1,1,0,1}
-#DLookup .\*.agx <COM Port>, <Baudrate 1-5>,<Download Via 1-3>,<File Type 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
-function FunctionWrapper([scriptblock]$action) {
+﻿function UploadLookup([int]$comPort,[int]$baudrate) {
+    #DLookup ParsedObjects.txt <COM Port>, <Baudrate 1-5>,<Download Via 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
+    & "C:\CipherLab\Forge\Batch\8 Series\Utilities\DLookup.exe" .\ParsedObjects.txt,$comPort,$baudrate,1,0,1
+}
+function UploadApplication([int]$comPort,[int]$baudrate) {
+    #AG_Load .\*.agx <COM Port>, <Baudrate 1-5>,<Download Via 1-3>,<File Type 1-3>, <Show Msg box 0-1>,<Show Progress 0-1>
+    & "C:\CipherLab\Forge\Batch\8 Series\Utilities\AG_Load.exe" .\8200.agx,$comPort,$baudrate,1,1,0,1
+}
+function FunctionWrapper([System.Action[int,int]]$action) {
+    Clear-host
+    Write-Host "Podaj COM port oraz jego prędkość oddzielone przecinkiem (więcej w README)"
+    Write-Host "np.: 1,1"
     Write-Host "Upewnij sie ze urzadzenie jest podlaczone pod wybrany COM port, po czym wcisnij ENTER" 
+    $toSplit = Read-Host
+    $parameters = $toSplit.Split(",")
+
     Write-Host "rozpoczecie dzialanie funkcji"
-    $action.Invoke()
-    Write-Host "zakonczenie dzialania funkcji"
+    $action.Invoke([int]$parameters[0],[int]$parameters[1])
 }
 function NormalizeDiacritics([string] $text) {
     $map = @{
@@ -41,7 +50,7 @@ function CreateLookup {
         Remove-Item -Path .\ParsedObjects.txt
     }
     $importedCSV = Import-Csv .\*.csv -Delimiter ';' -Encoding UTF8 |
-        Select-Object "Nr inwentarzowy", "Nazwa","Wartosc" , "Os. odpowiedzialna", "Umiejscowienie", "Grupa"
+        Select-Object "Nr inwentarzowy", "Nazwa","Wartość" , "Os. odpowiedzialna", "Umiejscowienie", "Grupa"
     $importedCSV | Export-Csv .\SelectedObjects.txt -NoTypeInformation -Delimiter ';' -Encoding UTF8
         Add-Content -Path .\ParsedObjects.txt -Encoding Ascii -Value(
         Get-Content -Path .\SelectedObjects.txt | % {
@@ -52,6 +61,7 @@ function CreateLookup {
     )
     Remove-Item -Path .\SelectedObjects.txt
 }
+Clear-host
 Write-Output "Wybierz opcje:"
 Write-Output "1 - Wygeneruj plik Lookup (UWAGA: wymaga pliku w formacie .CSV w lokacji skryptu)"
 Write-Output "2 - Wgraj plik Lookup (UWAGA: wymaga pliku Lookup wygenerowanego przez opcje nr 1)"
@@ -59,8 +69,13 @@ Write-Output "3 - Wgraj Aplikacje (UWAGA: wymaga pliku .AGX w lokacji skryptu)"
 Write-Output "4 - Zakoncz skrypt"
 $value = Read-Host " "
 switch($value){
-   1 {CreateLookup}
-   2 {UploadLookup}
-   3 {UploadApplication}
-   4 {break}
+   1 {CreateLookup }
+   2 {
+        $delegate = [System.Action[int,int]]{param($com,$baud) UploadLookup -comPort $com -baudrate $baud}
+        FunctionWrapper -action $delegate
+    }
+   3 {  
+        $delegate = [System.Action[int,int]]{param($com,$baud) UploadApplication -comPort $com -baudrate $baud}
+        FunctionWrapper -action $delegate
+    }
 }
