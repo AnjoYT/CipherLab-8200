@@ -2,3 +2,4 @@ ParsedObjects.txt
 *.csv
 .vscode
 README.md
+*.old
